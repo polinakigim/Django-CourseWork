@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -16,7 +15,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('email', models.CharField(help_text='Email получателя рассылки', max_length=50, unique=True)),
-                ('full_name', models.CharField(help_text='Полное имя получателя рассылки', max_length=100, verbose_name='ФИО')),
+                ('full_name',
+                 models.CharField(help_text='Полное имя получателя рассылки', max_length=100, verbose_name='ФИО')),
                 ('comment', models.TextField(verbose_name='Введите комментарий о получателе')),
             ],
             options={

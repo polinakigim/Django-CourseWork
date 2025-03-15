@@ -8,6 +8,8 @@ authors = ["polinakigim <polinakigim@gmail.com>"]
 python = "^3.10"
 Django = "4.2.2"
 psycopg2-binary = "^2.9.10"
+flake8 = "^7.1.2"
+isort = "^6.0.1"
 
 [tool.poetry.dev-dependencies]
 

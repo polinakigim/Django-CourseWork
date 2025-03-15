@@ -1,16 +1,15 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.core.mail import send_mail
+from django.db.models import Q
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views import View
-from django.contrib import messages
-from mailing.forms import RecipientForm, MessageForm, MailingForm
-from mailing.models import Recipient, Message, Mailing, MailingAttempt
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from config.settings import EMAIL_HOST_USER
-from django.core.mail import send_mail
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  UpdateView)
+
 from config import settings
-from django.http import HttpResponse
-from django.db.models import Q
+from mailing.forms import MailingForm, MessageForm, RecipientForm
+from mailing.models import Mailing, MailingAttempt, Message, Recipient
 
 
 class HomeView(ListView):
@@ -27,22 +26,26 @@ class HomeView(ListView):
         return context
 
 
-#Контроллеры для модели Получателя рассылки
+# Контроллеры для модели Получателя рассылки
 class RecipientCreateView(CreateView):
     model = Recipient
     form_class = RecipientForm
     success_url = reverse_lazy("mailing:recipient_list")
 
+
 class RecipientDeleteView(DeleteView):
     model = Recipient
     success_url = reverse_lazy("mailing:recipient_list")
 
+
 class RecipientDetailView(DetailView):
     model = Recipient
 
+
 class RecipientListView(ListView):
-     model = Recipient
-     template_name = "recipient_list.html"
+    model = Recipient
+    template_name = "recipient_list.html"
+
 
 class RecipientUpdateView(UpdateView):
     model = Recipient
@@ -76,6 +79,7 @@ class MessageUpdateView(UpdateView):
     form_class = MessageForm
     success_url = reverse_lazy("mailing:message_list")
 
+
 # Контроллеры для модели Сообщение
 class MailingCreateView(CreateView):
     model = Mailing
@@ -101,6 +105,7 @@ class MailingUpdateView(UpdateView):
     model = Mailing
     form_class = MailingForm
     success_url = reverse_lazy("mailing:mailing_list")
+
 
 class SendMailingView(View):
     def post(self, request, pk):
