@@ -44,14 +44,24 @@ class Mailing(models.Model):
     def __str__(self):
         return f"Рассылка с {self.recipients.count()} получателями"
 
-    def send_email_to_recipients(self):
-        subject = f"{self.message.subject}"
-        message = self.message.body
-        from_email = EMAIL_HOST_USER
+    # def send_email_to_recipients(self):
+    #     from_email = EMAIL_HOST_USER
+    #     subject = self.message.subject
+    #     message = self.message.body
+    #     recipient_list = [recipient.email for recipient in self.recipients.all()]
 
-        recipient_list = [recipient.email for recipient in self.recipients.all()]
-
-        send_mail(subject, message, from_email, recipient_list)
+        # try:
+        #     send_mail(subject, message, from_email, recipient_list)
+        #     self.attempts.create(status='успешно', server_response="Email успешно отправлен")
+        #     self.is_success = True
+        #     self.save()
+        #     logging.info(f"Рассылка {self.pk} успешно отправлена")
+        # except Exception as e:
+        #     error_message = str(e)
+        #     self.attempts.create(status='не успешно', server_response=error_message)
+        #     self.is_success = False
+        #     self.save()
+        #     logging.error(f"Ошибка при отправке рассылки {self.pk}: {error_message}")
 
     def unsuccess_mailing(self):
         self.is_blocked = True
@@ -70,3 +80,22 @@ class Mailing(models.Model):
         permissions = [
             ('can_unpublish', 'Can unpublish '),
         ]
+
+class MailingAttempt(models.Model):
+    STATUS_CHOICES = [
+        ('успешно', 'Успешно'),
+        ('не успешно', 'Не успешно'),
+    ]
+
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="Дата и время попытки")
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES)
+    server_response = models.TextField(blank=True, null=True, verbose_name="Ответ почтового сервера")
+    mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, related_name='attempts', verbose_name="Рассылка")
+
+    def __str__(self):
+        return self.status
+
+    class Meta:
+        verbose_name = "Попытка"
+        verbose_name_plural = "Попытки"
+        ordering = ["status"]
