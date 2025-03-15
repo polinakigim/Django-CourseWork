@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 
-from mailing.models import Recipient
+from mailing.models import Recipient, Message
 
 class RecipientForm(ModelForm):
     class Meta:
@@ -20,3 +20,14 @@ class RecipientForm(ModelForm):
         self.fields["comment"].widget.attrs.update(
             {"class": "form-control", "placeholder": "Введите комментарий"}
         )
+
+class MessageForm(ModelForm):
+    class Meta:
+        model = Message
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super(MessageForm, self).__init__(*args, **kwargs)
+
+        self.fields["subject"].widget.attrs.update({"class": "form-control", "placeholder": "Введите тему"})
+        self.fields["body"].widget.attrs.update({"class": "form-control", "placeholder": "Введите текст"})

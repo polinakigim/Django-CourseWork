@@ -12,3 +12,7 @@ class Recipient(models.Model):
 
     def __str__(self):
         return f"{self.full_name}"
+
+class Message(models.Model):
+    subject = models.CharField(max_length=50, help_text='Тема сообщения')
+    body = models.TextField('Тело сообщения')
