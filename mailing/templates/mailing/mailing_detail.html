@@ -1,0 +1,22 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row text-center">
+        <div class="col-3">
+            <div class="card mb-4 box-shadow">
+
+               <div class="card-body">
+                        <p class="card-text">{{newsletter.first_shipment}}</p>
+                        <p class="card-text">{{newsletter.last_shipment }}</p>
+                        <p class="card-text">{{newsletter.status}}</p>
+                        <p class="card-text">{{newsletter.message }}</p>
+                        {% for recipient in newsletter.recipients.all %}
+                        <p class="card-text">{{recipient.email }}</p>
+                        {% endfor %}
+               </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

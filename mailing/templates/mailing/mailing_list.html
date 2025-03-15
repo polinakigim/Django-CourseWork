@@ -1,0 +1,36 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row text-center">
+        {% for mailing in object_list %}
+        <div class="col-4">
+            <div class="card mb-4 box-shadow">
+
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">{{ mailing.id }}</h4>
+                </div>
+                <div class="card-body">
+
+                    <a href="{% url 'mailing:mailing_detail' mailing.pk %}">
+                        <button type="button" class="btn btn-outline-primary">Подробнее</button>
+                    </a>
+
+                    <a href="{% url 'mailing:mailing_update' mailing.pk %}">
+                        <button type="button" class="btn btn-outline-primary">Редактировать</button>
+                    </a>
+
+                    <a href="{% url 'mailing:mailing_delete' mailing.pk %}">
+                        <button type="button" class="btn btn-outline-danger">Удалить</button>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">Нет рассылок.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}

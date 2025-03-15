@@ -3,7 +3,7 @@
         <h5 class="my-0 mr-md-auto font-weight-normal">Skymail</h5>
         <nav class="ms-5">
             <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:home' %}">Домашняя страница</a>
-            <a class="p-2 btn btn-outline-primary" href="#">Рассылки</a>
+            <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:mailing_list' %}">Рассылки</a>
             <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:recipient_list' %}">Клиенты</a>
             <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:message_list' %}">Сообщения</a>
         </nav>
@@ -17,6 +17,9 @@
         </a>
         <a href="{% url 'mailing:message_create' %}">
             <button type="button" class="btn btn-lg btn-block btn-outline-primary">Создать новое Сообщение</button>
+        </a>
+        <a href="{% url 'mailing:mailing_create' %}">
+            <button type="button" class="btn btn-lg btn-block btn-outline-primary">Создать новую Рассылку</button>
         </a>
     </div>
 </header>
