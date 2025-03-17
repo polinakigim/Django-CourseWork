@@ -10,7 +10,7 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
 from config import settings
 from mailing.forms import MailingForm, MessageForm, RecipientForm
 from mailing.models import Mailing, MailingAttempt, Message, Recipient
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class HomeView(ListView):
     model = Recipient
@@ -27,13 +27,13 @@ class HomeView(ListView):
 
 
 # Контроллеры для модели Получателя рассылки
-class RecipientCreateView(CreateView):
+class RecipientCreateView(LoginRequiredMixin, CreateView):
     model = Recipient
     form_class = RecipientForm
     success_url = reverse_lazy("mailing:recipient_list")
 
 
-class RecipientDeleteView(DeleteView):
+class RecipientDeleteView(LoginRequiredMixin, DeleteView):
     model = Recipient
     success_url = reverse_lazy("mailing:recipient_list")
 
@@ -47,20 +47,20 @@ class RecipientListView(ListView):
     template_name = "recipient_list.html"
 
 
-class RecipientUpdateView(UpdateView):
+class RecipientUpdateView(LoginRequiredMixin, UpdateView):
     model = Recipient
     form_class = RecipientForm
     success_url = reverse_lazy("mailing:recipient_list")
 
 
 # Контроллеры для модели Сообщение
-class MessageCreateView(CreateView):
+class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     form_class = MessageForm
     success_url = reverse_lazy("mailing:message_list")
 
 
-class MessageDeleteView(DeleteView):
+class MessageDeleteView(LoginRequiredMixin, DeleteView):
     model = Message
     success_url = reverse_lazy("mailing:message_list")
 
@@ -74,20 +74,20 @@ class MessageListView(ListView):
     template_name = "message_list.html"
 
 
-class MessageUpdateView(UpdateView):
+class MessageUpdateView(LoginRequiredMixin, UpdateView):
     model = Message
     form_class = MessageForm
     success_url = reverse_lazy("mailing:message_list")
 
 
-# Контроллеры для модели Сообщение
-class MailingCreateView(CreateView):
+# Контроллеры для модели Рассылки
+class MailingCreateView(LoginRequiredMixin, CreateView):
     model = Mailing
     form_class = MailingForm
     success_url = reverse_lazy("mailing:mailing_list")
 
 
-class MailingDeleteView(DeleteView):
+class MailingDeleteView(LoginRequiredMixin, DeleteView):
     model = Mailing
     success_url = reverse_lazy("mailing:maling_list")
 
@@ -101,7 +101,7 @@ class MailingListView(ListView):
     template_name = "mailing_list.html"
 
 
-class MailingUpdateView(UpdateView):
+class MailingUpdateView(LoginRequiredMixin, UpdateView):
     model = Mailing
     form_class = MailingForm
     success_url = reverse_lazy("mailing:mailing_list")

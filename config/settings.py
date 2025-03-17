@@ -1,4 +1,5 @@
 from pathlib import Path
+from django.conf.global_settings import LOGIN_REDIRECT_URL
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -16,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mailing',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -89,7 +91,14 @@ STATICFILES_DIRS = (BASE_DIR / "static/",)
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_HOST = "smtp.yandex.ru"
+AUTH_USER_MODEL = 'users.User'
+
+LOGIN_REDIRECT_URL = 'mailing:home'
+LOGOUT_REDIRECT_URL = 'mailing:home'
+
+LOGIN_URL = 'users:login'
+
+EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = "polina.kigimova@yandex.com"
 EMAIL_HOST_PASSWORD = "xflteapwuafqqgma"
@@ -98,3 +107,5 @@ EMAIL_USE_SSL = True
 
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+
