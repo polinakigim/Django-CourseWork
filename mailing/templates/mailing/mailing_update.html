@@ -1,0 +1,15 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+
+<div class="col-6 col-md p-3 border bg-light">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:mailing_list' %}">Отмена</a>
+    </form>
+</div>
+
+{% include 'header.html' %}
+{% endblock %}

@@ -1,0 +1,43 @@
+<header>
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
+        <h5 class="my-0 mr-md-auto font-weight-normal">Skymail</h5>
+        <nav class="ms-5">
+            <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:home' %}">Домашняя страница</a>
+
+            {% if user.is_authenticated %}
+            <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:mailing_list' %}">Рассылки</a>
+            <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:mailing_attempt_list' %}">Попытки рассылок</a>
+
+            {% if perms.mailing.can_view_all_recipient %}
+            <a class="p-2 btn btn-outline-primary" href="{% url 'users:user_list' %}">Список всех пользователей</a>
+            {% endif %}
+
+            <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:recipient_list' %}">Клиенты</a>
+            <a class="p-2 btn btn-outline-primary" href="{% url 'mailing:message_list' %}">Сообщения</a>
+            <a class="p-2 btn btn-outline-primary" href="{% url 'users:logout' %}">Выход</a>
+            <a class="p-2 btn btn-primary" href="{% url 'users:user_profile' pk=user.id  %}">Профиль</a>
+            {% else %}
+            <a class="p-2 btn btn-outline-primary" href="{% url 'users:login' %}">Вход</a>
+            <a class="p-2 btn btn-outline-primary" href="{% url 'users:register' %}">Регистрация</a>
+            {% endif %}
+        </nav>
+    </div>
+
+    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+        <h1 class="display-4">Skymail</h1>
+        <p class="lead">Skymail - сервис для рассылок</p>
+        {% if user.is_authenticated and not perms.mailing.can_view_all_recipient %}
+        <a href="{% url 'mailing:recipient_create' %}">
+            <button type="button" class="btn btn-lg btn-block btn-outline-primary">Создать нового Получателя рассылки
+            </button>
+        </a>
+        <a href="{% url 'mailing:message_create' %}">
+            <button type="button" class="btn btn-lg btn-block btn-outline-primary">Создать новое Сообщение</button>
+        </a>
+        <a href="{% url 'mailing:mailing_create' %}">
+            <button type="button" class="btn btn-lg btn-block btn-outline-primary">Создать новую Рассылку</button>
+        </a>
+        {% else %}
+        {% endif %}
+    </div>
+</header>

@@ -1,0 +1,40 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row text-center">
+        {% for message in object_list %}
+        {% if message.owner == user %}
+        <div class="col-4">
+            <div class="card mb-4 box-shadow">
+
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">{{ message.subject }}</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">{{ message.body|truncatechars:100 }}</p>
+
+                    <a href="{% url 'mailing:message_detail' message.pk %}">
+                        <button type="button" class="btn btn-outline-primary">Подробнее</button>
+                    </a>
+                    {% if user == message.owner %}
+                    <a href="{% url 'mailing:message_update' message.pk %}">
+                        <button type="button" class="btn btn-outline-primary">Редактировать</button>
+                    </a>
+
+                    <a href="{% url 'mailing:message_delete' message.pk %}">
+                        <button type="button" class="btn btn-outline-danger">Удалить</button>
+                    </a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+        {% endif %}
+        {% empty %}
+        <p class="text-center">Нет сообщений.</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}

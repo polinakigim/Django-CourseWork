@@ -1,0 +1,22 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row text-center">
+        <div class="col-6">
+            <div class="card mb-4 box-shadow">
+                <h3>Попытки рассылки:</h3>
+                <p>Количество попыток: {{ mailing.attempts.all|length }}</p>
+
+                <ul>
+                    {% for attempt in mailing.attempts.all|dictsortreversed:"timestamp" %}
+                        <li>{{ attempt.timestamp|date:"d.m.Y H:i" }} - {{ attempt.status }}</li>
+                    {% endfor %}
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

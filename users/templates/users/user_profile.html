@@ -1,0 +1,16 @@
+{% extends 'mailing/base.html' %}
+{% load my_tags %}
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Профиль пользователя</h2>
+    <div class="profile-info">
+        <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Статус:</strong> {% if user.is_blocked %}Заблокирован{% else %}Активен{% endif %}</p>
+        <p><strong>Дата регистрации:</strong> {{ user.date_joined }}</p>
+    </div>
+    <a href="{% url 'users:user_edit' pk=user.id %}" class="btn btn-primary">Редактировать профиль</a>
+</div>
+{% endblock %}
