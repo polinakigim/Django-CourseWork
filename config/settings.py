@@ -1,5 +1,4 @@
 from pathlib import Path
-from django.conf.global_settings import LOGIN_REDIRECT_URL
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -61,7 +60,6 @@ DATABASES = {
     }
 }
 
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -108,4 +106,11 @@ EMAIL_USE_SSL = True
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-
+CACHE_ENABLED = True
+if CACHE_ENABLED:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": 'redis://127.0.0.1:6379/1',
+        }
+    }

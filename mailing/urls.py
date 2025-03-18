@@ -1,14 +1,16 @@
 from django.urls import path
+from django.views.decorators.cache import cache_page
 
 from mailing.apps import MailingConfig
-from mailing.views import (HomeView, MailingCreateView, MailingDeleteView,
-                           MailingDetailView, MailingListView,
-                           MailingUpdateView, MessageCreateView,
-                           MessageDeleteView, MessageDetailView,
-                           MessageListView, MessageUpdateView,
-                           RecipientCreateView, RecipientDeleteView,
-                           RecipientDetailView, RecipientListView,
-                           RecipientUpdateView, SendMailingView, BlockMailingView)
+from mailing.views import (BlockMailingView, HomeView, MailingCreateView,
+                           MailingDeleteView, MailingDetailView,
+                           MailingListView, MailingUpdateView,
+                           MessageCreateView, MessageDeleteView,
+                           MessageDetailView, MessageListView,
+                           MessageUpdateView, RecipientCreateView,
+                           RecipientDeleteView, RecipientDetailView,
+                           RecipientListView, RecipientUpdateView,
+                           SendMailingView)
 
 app_name = MailingConfig.name
 

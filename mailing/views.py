@@ -1,7 +1,8 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.db.models import Q
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
+from django.http import HttpResponse, HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
@@ -10,7 +11,9 @@ from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
 from config import settings
 from mailing.forms import MailingForm, MessageForm, RecipientForm
 from mailing.models import Mailing, MailingAttempt, Message, Recipient
-from django.contrib.auth.mixins import LoginRequiredMixin
+from mailing.services import (get_mailings_from_cache, get_messages_from_cache,
+                              get_recipients_from_cache)
+
 
 class HomeView(ListView):
     model = Recipient
@@ -46,6 +49,9 @@ class RecipientListView(ListView):
     model = Recipient
     template_name = "recipient_list.html"
 
+    def get_queryset(self):
+        return get_recipients_from_cache()
+
 
 class RecipientUpdateView(LoginRequiredMixin, UpdateView):
     model = Recipient
@@ -72,6 +78,9 @@ class MessageDetailView(DetailView):
 class MessageListView(ListView):
     model = Message
     template_name = "message_list.html"
+
+    def get_queryset(self):
+        return get_messages_from_cache()
 
 
 class MessageUpdateView(LoginRequiredMixin, UpdateView):
@@ -104,14 +113,15 @@ class MailingListView(ListView):
     model = Mailing
     template_name = "mailing_list.html"
 
+    def get_queryset(self):
+        return get_mailings_from_cache()
+
 
 class MailingUpdateView(LoginRequiredMixin, UpdateView):
     model = Mailing
     form_class = MailingForm
     success_url = reverse_lazy("mailing:mailing_list")
 
-
-from django.http import HttpResponseForbidden
 
 class SendMailingView(View):
     def post(self, request, pk):
@@ -123,7 +133,6 @@ class SendMailingView(View):
             status="не успешно",
             server_response="Попытка отправки"
         )
-
 
         if mailing.is_blocked:
             attempt.server_response = "Рассылка заблокирована. Отправка невозможна."
@@ -159,7 +168,6 @@ class SendMailingView(View):
 
         attempt.save()
 
-
         if successful_recipients:
             mailing.status = "завершена"
         else:
@@ -168,9 +176,8 @@ class SendMailingView(View):
         mailing.save()
 
         return HttpResponse(
-            f"Рассылка завершена!"
+            "Рассылка завершена!"
         )
-
 
 
 class BlockMailingView(LoginRequiredMixin, View):
