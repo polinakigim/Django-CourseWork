@@ -5,8 +5,8 @@
     <div class="row text-center">
         {% for mailing in object_list %}
         <div class="col-4">
+            {% if user == mailing.owner or perms.mailing.can_view_all_recipient %}
             <div class="card mb-4 box-shadow">
-
                 <div class="card-header">
                     <h4 class="my-0 font-weight-normal">{{ mailing.id }}</h4>
                 </div>
@@ -15,20 +15,28 @@
                     <a href="{% url 'mailing:mailing_detail' mailing.pk %}">
                         <button type="button" class="btn btn-outline-primary">СТАТИСТИКА</button>
                     </a>
-
+                    {% if user == mailing.owner or user.is_superuser%}
                     <a href="{% url 'mailing:mailing_update' mailing.pk %}">
                         <button type="button" class="btn btn-outline-primary">Редактировать</button>
                     </a>
-                  <form action="{% url 'mailing:send' mailing.pk %}" method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-primary">Отправить рассылку</button>
-</form>
+
                     <a href="{% url 'mailing:mailing_delete' mailing.pk %}">
                         <button type="button" class="btn btn-outline-danger">Удалить</button>
                     </a>
-                </div>
+                    {% elif perms.mailing.can_view_all_recipient %}
+                     <a href="{% url 'mailing:mailing_block' mailing.pk %}">
+                        <button type="button" class="btn btn-outline-danger">ЗАБЛОКИРОВАТЬ</button>
+                    </a>
+                    {% endif %}
 
+
+                    <form action="{% url 'mailing:send' mailing.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Отправить рассылку</button>
+                    </form>
+                </div>
             </div>
+            {% endif %}
         </div>
         {% empty %}
         <p class="text-center">Нет рассылок.</p>

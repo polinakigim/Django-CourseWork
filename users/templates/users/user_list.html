@@ -1,10 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'mailing/home.html' %}
+{% block title %}Список пользователей{% endblock %}
+{% block content %}
+<h2>Список пользователей</h2>
 
-</body>
-</html>
+<!-- Отладочный вывод -->
+<pre>{{ users_list }}</pre>
+
+<table class="table custom-margin">
+    <thead>
+        <tr>
+            <th>Имя пользователя</th>
+            <th>Email</th>
+            <th>Статус</th>
+            <th>Управление</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in object_list %}
+            {% if perms.users.can_view_users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    {% if user.is_blocked %}
+                        Заблокирован
+                    {% else %}
+                        Активен
+                    {% endif %}
+                </td>
+                {% if perms.users.can_block_users or user.is_staff %}
+                    {% if user.is_blocked %}
+                        <td>
+                            <a href="{% url 'users:user_block' user.id %}">Разблокировать пользователя</a>
+                        </td>
+                    {% else %}
+                        <td>
+                            <a href="{% url 'users:user_block' user.id %}">Заблокировать пользователя</a>
+                        </td>
+                    {% endif %}
+                {% endif %}
+            </tr>
+            {% endif %}
+        {% empty %}
+        <tr>
+            <td colspan="4" class="text-center">Нет пользователей для отображения.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -17,14 +17,16 @@
                     <a href="{% url 'mailing:recipient_detail' recipient.pk %}">
                         <button type="button" class="btn btn-outline-primary">Подробнее</button>
                         <a href="{% url 'mailing:recipient_update' recipient.pk %}">
+                            {% if user == recipient.owner %}
                             <button type="button" class="btn btn-outline-primary">Редактировать</button>
                         </a>
                         <a href="{% url 'mailing:recipient_delete' recipient.pk %}">
                             <button type="button" class="btn btn-outline-danger">Удалить</button>
                         </a>
+                        {% endif %}
+                    </a>
 
                 </div>
-
             </div>
         </div>
         {% empty %}

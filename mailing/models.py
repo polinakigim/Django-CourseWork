@@ -1,17 +1,22 @@
 import logging
 
 from django.db import models
+from users.models import User
 
 
 class Recipient(models.Model):
     email = models.CharField(max_length=50, unique=True, help_text='Email получателя рассылки')
     full_name = models.CharField(max_length=100, verbose_name='ФИО', help_text='Полное имя получателя рассылки')
     comment = models.TextField('Введите комментарий о получателе')
+    owner = models.ForeignKey(User, verbose_name="Владелец", blank=True, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name = 'Получатель'
         verbose_name_plural = 'Получатели'
         ordering = ['email', ]
+        permissions = [
+            ("can_view_all_recipient", "can view all recipient"),
+        ]
 
     def __str__(self):
         return f"{self.full_name}"
@@ -20,11 +25,15 @@ class Recipient(models.Model):
 class Message(models.Model):
     subject = models.CharField(max_length=50, help_text='Тема сообщения')
     body = models.TextField('Тело сообщения')
+    owner = models.ForeignKey(User, verbose_name="Владелец", blank=True, null=True, on_delete=models.SET_NULL)
 
     class Meta:
         verbose_name = "Сообщение"
         verbose_name_plural = "Сообщений"
         ordering = ["subject"]
+        permissions = [
+            ("can_view_all_messages", "can view all messages"),
+        ]
 
 
 class Mailing(models.Model):
@@ -38,17 +47,19 @@ class Mailing(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='создана')
     message = models.OneToOneField(Message, on_delete=models.CASCADE)
     recipients = models.ManyToManyField(Recipient, verbose_name="Получатели")
-    is_success = models.BooleanField(default=False)
+    owner = models.ForeignKey(User, verbose_name="Владелец", blank=True, null=True, on_delete=models.SET_NULL)
+
+    is_blocked = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Рассылка с {self.recipients.count()} получателями"
 
-    def unsuccess_mailing(self):
+    def block_mailing(self):
         self.is_blocked = True
         self.save()
         logging.info(f"Рассылка {self.pk} заблокирована пользователем")
 
-    def success_mailing(self):
+    def unblock_mailing(self):
         self.is_blocked = False
         self.save()
         logging.info(f"Рассылка {self.pk} разблокирована пользователем")
@@ -58,7 +69,8 @@ class Mailing(models.Model):
         verbose_name_plural = 'Рассылки'
         ordering = ['message', 'status', ]
         permissions = [
-            ('can_unpublish', 'Can unpublish '),
+            ("can_view_all_mailings", "can view all mailings"),
+            ("can_disable_mailings", "can disable mailings"),
         ]
 
 
@@ -80,3 +92,6 @@ class MailingAttempt(models.Model):
         verbose_name = "Попытка"
         verbose_name_plural = "Попытки"
         ordering = ["status"]
+        permissions = [
+            ("can_view_all_mailings_attempts", "can view all mailings attempts"),
+        ]

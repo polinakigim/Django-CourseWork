@@ -18,14 +18,17 @@
     <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
         <h1 class="display-4">Skymail</h1>
         <p class="lead">Skymail - сервис для рассылок</p>
-        <a href="{% url 'mailing:recipient_create' %}">
-            <button type="button" class="btn btn-lg btn-block btn-outline-primary">Создать нового Получателя рассылки</button>
-        </a>
-        <a href="{% url 'mailing:message_create' %}">
-            <button type="button" class="btn btn-lg btn-block btn-outline-primary">Создать новое Сообщение</button>
-        </a>
-        <a href="{% url 'mailing:mailing_create' %}">
-            <button type="button" class="btn btn-lg btn-block btn-outline-primary">Создать новую Рассылку</button>
-        </a>
+        {% if user.is_authenticated and not perms.mailing.can_view_all_recipient %}
+            <a href="{% url 'mailing:recipient_create' %}">
+                <button type="button" class="btn btn-lg btn-block btn-outline-primary">Создать нового Получателя рассылки</button>
+            </a>
+            <a href="{% url 'mailing:message_create' %}">
+                <button type="button" class="btn btn-lg btn-block btn-outline-primary">Создать новое Сообщение</button>
+            </a>
+            <a href="{% url 'mailing:mailing_create' %}">
+                <button type="button" class="btn btn-lg btn-block btn-outline-primary">Создать новую Рассылку</button>
+            </a>
+        {% else %}
+        {% endif %}
     </div>
 </header>

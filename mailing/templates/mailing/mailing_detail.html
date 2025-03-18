@@ -3,26 +3,20 @@
 
 <div class="container">
     <div class="row text-center">
-        <div class="col-3">
+        <div class="col-6">
             <div class="card mb-4 box-shadow">
                 <h3>Попытки рассылки:</h3>
                 <p>Количество попыток: {{ mailing.attempts.all|length }}</p>
+
                 <ul>
-                    {% for attempt in mailing.attempts.all %}
-                    <li>{{ attempt.timestamp }} - {{ attempt.status }} - {{ attempt.server_response }}</li>
+                    {% for attempt in mailing.attempts.all|dictsortreversed:"timestamp" %}
+                        <li>{{ attempt.timestamp|date:"d.m.Y H:i" }} - {{ attempt.status }}</li>
                     {% endfor %}
                 </ul>
-                <div class="card-body">
-                    <p class="card-text">{{newsletter.first_shipment}}</p>
-                    <p class="card-text">{{newsletter.last_shipment }}</p>
-                    <p class="card-text">{{newsletter.status}}</p>
-                    <p class="card-text">{{newsletter.message }}</p>
-                    {% for recipient in newsletter.recipients.all %}
-                    <p class="card-text">{{recipient.email }}</p>
-                    {% endfor %}
-                </div>
+
             </div>
         </div>
     </div>
 </div>
+
 {% endblock content %}

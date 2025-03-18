@@ -37,4 +37,4 @@ class MessageForm(ModelForm):
 class MailingForm(ModelForm):
     class Meta:
         model = Mailing
-        fields = "__all__"
+        fields = ['message', 'recipients', 'status']

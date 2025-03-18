@@ -1,7 +1,7 @@
 from django.core.mail import send_mail
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
@@ -86,10 +86,14 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     form_class = MailingForm
     success_url = reverse_lazy("mailing:mailing_list")
 
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
 
 class MailingDeleteView(LoginRequiredMixin, DeleteView):
     model = Mailing
-    success_url = reverse_lazy("mailing:maling_list")
+    success_url = reverse_lazy("mailing:mailing_list")
 
 
 class MailingDetailView(DetailView):
@@ -107,16 +111,26 @@ class MailingUpdateView(LoginRequiredMixin, UpdateView):
     success_url = reverse_lazy("mailing:mailing_list")
 
 
+from django.http import HttpResponseForbidden
+
 class SendMailingView(View):
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, pk=pk)
-        recipients = mailing.recipients.all()
 
-        # Создание попытки рассылки
+        # Создаем попытку рассылки сразу
         attempt = MailingAttempt.objects.create(
             mailing=mailing,
-            status="не успешно"
+            status="не успешно",
+            server_response="Попытка отправки"
         )
+
+
+        if mailing.is_blocked:
+            attempt.server_response = "Рассылка заблокирована. Отправка невозможна."
+            attempt.save()
+            return HttpResponseForbidden("Рассылка заблокирована и не может быть отправлена.")
+
+        recipients = mailing.recipients.all()
 
         successful_recipients = []
         failed_recipients = []
@@ -137,18 +151,41 @@ class SendMailingView(View):
                 failed_recipients.append(recipient)
                 responses.append(f"Неуспешно: {recipient.email} - {str(e)}")
 
-        # Обновление попытки рассылки
         attempt.server_response = "\n".join(responses)
-        attempt.status = "успешно" if len(failed_recipients) == 0 else "не успешно"
+        if successful_recipients:
+            attempt.status = "успешно"
+        else:
+            attempt.status = "не успешно"
+
         attempt.save()
 
-        # Обновление статуса рассылки
-        if len(successful_recipients) == len(recipients):
+
+        if successful_recipients:
             mailing.status = "завершена"
         else:
-            mailing.status = "запущена"  # Если были ошибки, можно оставить статус "создана"
+            mailing.status = "не отправлена"
+
         mailing.save()
 
         return HttpResponse(
-            f"Рассылка завершена! Успешно: {len(successful_recipients)}, Неуспешно: {len(failed_recipients)}"
+            f"Рассылка завершена!"
         )
+
+
+
+class BlockMailingView(LoginRequiredMixin, View):
+    def get(self, request, mailing_id):
+        mailing = get_object_or_404(Mailing, id=mailing_id)
+        return render(request, "mailing/mailing_block.html", {"mailing": mailing})
+
+    def post(self, request, mailing_id):
+        mailing = get_object_or_404(Mailing, id=mailing_id)
+
+        if not request.user.has_perm("mailing.can_disable_mailings"):
+            return HttpResponseForbidden("У вас нет прав для блокировки рассылки.")
+
+        is_blocked = request.POST.get("is_blocked") == "on"  # Теперь работает правильно
+        mailing.is_blocked = is_blocked
+        mailing.save()
+
+        return redirect("mailing:mailing_list")

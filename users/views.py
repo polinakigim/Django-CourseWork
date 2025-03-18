@@ -1,6 +1,9 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404, redirect
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import CreateView, ListView
 import secrets
 from config.settings import EMAIL_HOST_USER
@@ -41,3 +44,20 @@ class UserListView(ListView):
 
     def get_queryset(self):
         return User.objects.all()
+
+
+class BlockUserView(LoginRequiredMixin, View):
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        return render(request, "users/user_block.html", {"user": user})
+
+    def post(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+
+        if not request.user.has_perm("users.can_block_users"):
+            return HttpResponseForbidden("У вас нет прав для блокировки рассылки.")
+
+        is_blocked = request.POST.get("is_blocked")
+        user.is_blocked = is_blocked == "on"
+        user.save()
+        return redirect("users:user_list")

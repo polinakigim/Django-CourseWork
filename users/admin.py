@@ -1,3 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
+from users.models import User
+
+
+@admin.register(User)
+class UserModer(admin.ModelAdmin):
+    list_display = ("id", "email")
+    search_fields = ("email",)

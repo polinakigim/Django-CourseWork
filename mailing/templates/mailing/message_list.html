@@ -16,7 +16,7 @@
                     <a href="{% url 'mailing:message_detail' message.pk %}">
                         <button type="button" class="btn btn-outline-primary">Подробнее</button>
                     </a>
-
+                    {% if user == message.owner %}
                     <a href="{% url 'mailing:message_update' message.pk %}">
                         <button type="button" class="btn btn-outline-primary">Редактировать</button>
                     </a>
@@ -24,6 +24,7 @@
                     <a href="{% url 'mailing:message_delete' message.pk %}">
                         <button type="button" class="btn btn-outline-danger">Удалить</button>
                     </a>
+                    {% endif %}
                 </div>
 
             </div>
