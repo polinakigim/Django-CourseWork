@@ -4,6 +4,7 @@
 <div class="container">
     <div class="row text-center">
         {% for message in object_list %}
+        {% if message.owner == user %}
         <div class="col-4">
             <div class="card mb-4 box-shadow">
 
@@ -29,6 +30,7 @@
 
             </div>
         </div>
+        {% endif %}
         {% empty %}
         <p class="text-center">Нет сообщений.</p>
         {% endfor %}

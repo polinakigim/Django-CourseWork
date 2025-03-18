@@ -1,10 +1,15 @@
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-uh8@3igm1f&!sog_6+#8i2$$exejkm61h=a9e8$h2t3x69!)lq'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG', False) == 'True'
 
 ALLOWED_HOSTS = []
 
@@ -52,11 +57,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "django_coursework",
-        "USER": "postgres",
-        "PASSWORD": "qwerty",
-        "HOST": "127.0.0.1",
-        "PORT": "5432",
+        "NAME": os.getenv('NAME'),
+        "USER": os.getenv('USER'),
+        "PASSWORD": os.getenv('PASSWORD'),
+        "HOST": os.getenv('HOST'),
+        "PORT": os.getenv('PORT'),
     }
 }
 
@@ -87,6 +92,10 @@ STATIC_URL = "static/"
 
 STATICFILES_DIRS = (BASE_DIR / "static/",)
 
+MEDIA_URL = "media/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR / "media")
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
@@ -96,21 +105,21 @@ LOGOUT_REDIRECT_URL = 'mailing:home'
 
 LOGIN_URL = 'users:login'
 
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = "polina.kigimova@yandex.com"
-EMAIL_HOST_PASSWORD = "xflteapwuafqqgma"
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", False) == 'True'
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL", False) == 'True'
 
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-CACHE_ENABLED = True
+CACHE_ENABLED = False
 if CACHE_ENABLED:
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.redis.RedisCache",
-            "LOCATION": 'redis://127.0.0.1:6379/1',
+            "LOCATION": os.getenv("LOCATION"),
         }
     }

@@ -196,3 +196,8 @@ class BlockMailingView(LoginRequiredMixin, View):
         mailing.save()
 
         return redirect("mailing:mailing_list")
+
+
+class MailingAttemptListView(ListView):
+    model = MailingAttempt
+    template_name = "mailing/mailing_attempt_list.html"

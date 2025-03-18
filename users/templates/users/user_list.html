@@ -1,16 +1,19 @@
 {% extends 'mailing/home.html' %}
+{% load my_tags %}
+
 {% block title %}Список пользователей{% endblock %}
+
 {% block content %}
 <h2>Список пользователей</h2>
-
-<!-- Отладочный вывод -->
-<pre>{{ users_list }}</pre>
 
 <table class="table custom-margin">
     <thead>
         <tr>
+            <th>Аватар</th>
             <th>Имя пользователя</th>
             <th>Email</th>
+            <th>Номер телефона</th>
+            <th>Страна</th>
             <th>Статус</th>
             <th>Управление</th>
         </tr>
@@ -19,33 +22,41 @@
         {% for user in object_list %}
             {% if perms.users.can_view_users %}
             <tr>
+                <td>
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar.url }}" alt="Аватар" width="50" height="50" class="rounded-circle">
+                    {% else %}
+                        <img src="/static/images/default-avatar.png" alt="Нет аватара" width="50" height="50" class="rounded-circle">
+                    {% endif %}
+                </td>
                 <td>{{ user.username }}</td>
                 <td>{{ user.email }}</td>
+                <td>{{ user.phone_number|default:"-" }}</td>
+                <td>{{ user.country|default:"-" }}</td>
                 <td>
                     {% if user.is_blocked %}
-                        Заблокирован
+                        <span class="text-danger">Заблокирован</span>
                     {% else %}
-                        Активен
+                        <span class="text-success">Активен</span>
                     {% endif %}
                 </td>
                 {% if perms.users.can_block_users or user.is_staff %}
-                    {% if user.is_blocked %}
-                        <td>
-                            <a href="{% url 'users:user_block' user.id %}">Разблокировать пользователя</a>
-                        </td>
-                    {% else %}
-                        <td>
-                            <a href="{% url 'users:user_block' user.id %}">Заблокировать пользователя</a>
-                        </td>
-                    {% endif %}
+                    <td>
+                        {% if user.is_blocked %}
+                            <a href="{% url 'users:user_block' user.id %}" class="btn btn-success btn-sm">Разблокировать</a>
+                        {% else %}
+                            <a href="{% url 'users:user_block' user.id %}" class="btn btn-danger btn-sm">Заблокировать</a>
+                        {% endif %}
+                    </td>
                 {% endif %}
             </tr>
             {% endif %}
         {% empty %}
         <tr>
-            <td colspan="4" class="text-center">Нет пользователей для отображения.</td>
+            <td colspan="7" class="text-center">Нет пользователей для отображения.</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
 {% endblock %}

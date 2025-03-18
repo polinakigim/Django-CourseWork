@@ -4,6 +4,7 @@
 <div class="container">
     <div class="row text-center">
         {% for recipient in object_list %}
+        {% if recipient.owner == user %}
         <div class="col-4">
             <div class="card mb-4 box-shadow">
 
@@ -28,6 +29,7 @@
 
                 </div>
             </div>
+                      {% endif %}
         </div>
         {% empty %}
         <p class="text-center">Нет получателей рассылки.</p>

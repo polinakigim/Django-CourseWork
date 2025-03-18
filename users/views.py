@@ -6,10 +6,10 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from config.settings import EMAIL_HOST_USER
-from users.forms import UserRegisterForm
+from users.forms import UserProfileForm, UserRegisterForm
 from users.models import User
 
 
@@ -65,3 +65,19 @@ class BlockUserView(LoginRequiredMixin, View):
         user.is_blocked = is_blocked == "on"
         user.save()
         return redirect("users:user_list")
+
+
+class UserDetailView(DetailView):
+    model = User
+    template_name = "users/user_profile.html"
+    context_object_name = "user_profile"
+
+
+class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = UserProfileForm
+    template_name = 'users/user_profile_edit.html'
+    success_url = reverse_lazy("users:user_profile")
+
+    def get_success_url(self):
+        return reverse_lazy("users:user_profile", kwargs={'pk': self.object.pk})
